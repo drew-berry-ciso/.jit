@@ -1,16 +1,15 @@
+name: My plan
+level: beginner
+update_id: 9b36cc4a-3258-4166-b76f-9899e64557af
+author: Jit
+version: 0.1
 owners:
   default: null
-name: My plan
-author: Jit
-items:
-  - name: Scan container images
-    uses: >-
-      jitsecurity-controls/jit-plans/items/infrastructure/item-container-scan.yml@latest
-  - name: Scan IaC for static misconfigurations
-    uses: >-
-      jitsecurity-controls/jit-plans/items/infrastructure/item-iac-misconfiguration-detection.yml@latest
-level: beginner
-version: 0.1
 references:
   - https://www.jit.io
 tags: []
+items:
+  - name: Scan container images
+    uses: jitsecurity-controls/jit-plans/items/infrastructure/item-container-scan.yml@latest
+  - name: Scan IaC for static misconfigurations
+    uses: jitsecurity-controls/jit-plans/items/infrastructure/item-iac-misconfiguration-detection.yml@latest

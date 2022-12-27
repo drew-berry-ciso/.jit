@@ -7,36 +7,36 @@ on:
           required: true
 jobs:
   docker-scan:
-    if: contains( fromJSON(github.event.inputs.client_payload).payload.control_ids, '4f090709-fac0-4e99-ad69-ef283e811c03') || fromJSON(github.event.inputs.client_payload).payload.workflow_job_name == 'docker-scan'
-    runs-on: ubuntu-latest
+    if: fromJSON(github.event.inputs.client_payload).payload.workflow_job_name == 'docker-scan'
+    runs-on: ubuntu-20.04
     steps:
-    - name: trivy-dockerfile-scanner
+    - name: trivy
       uses: jitsecurity-controls/jit-github-action@v1.7
       with:
         docker_user: jit-bot
         docker_password: ${{fromJSON(github.event.inputs.client_payload).payload.container_registry_token}}
         security_control: ghcr.io/jitsecurity-controls/control-trivy-alpine:latest
-        security_control_args: --quiet config --severity HIGH,CRITICAL -f json --ignorefile /opt/.trivyignore /code
+        security_control_args: --quiet config --severity HIGH,CRITICAL -f json --ignorefile /opt/.trivyignore \${WORK_DIR:-.}
         
         dispatch_type: workflow
 
   iac-misconfig-detection:
-    if: contains( fromJSON(github.event.inputs.client_payload).payload.control_ids, 'd75b6a09-a4cd-4944-903e-7cf78ae7065b') || fromJSON(github.event.inputs.client_payload).payload.workflow_job_name == 'iac-misconfig-detection'
-    runs-on: ubuntu-latest
+    if: fromJSON(github.event.inputs.client_payload).payload.workflow_job_name == 'iac-misconfig-detection'
+    runs-on: ubuntu-20.04
     steps:
-    - name: cloud-infrastructure-misconfiguration
+    - name: kics
       uses: jitsecurity-controls/jit-github-action@v1.7
       with:
         docker_user: jit-bot
         docker_password: ${{fromJSON(github.event.inputs.client_payload).payload.container_registry_token}}
         security_control: ghcr.io/jitsecurity-controls/control-kics-alpine:latest
-        security_control_args: scan -p /code -o /code/jit-report -f json --config \$KICS_CONFIG_FILE_PATH --disable-secrets
+        security_control_args: scan -p \${WORK_DIR:-.} -o \$REPORT_FILE -f json --config \$KICS_CONFIG_FILE_PATH --disable-secrets
         security_control_output_file: /code/jit-report/results.json
         dispatch_type: workflow
 
   remediation-pr:
     if: fromJSON(github.event.inputs.client_payload).payload.workflow_job_name == 'remediation-pr'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: remediation-pr
       uses: jitsecurity-controls/jit-github-action@v1.7
